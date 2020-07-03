@@ -8,7 +8,7 @@ user1	  1234
 user2     1234
 user3     1234
 
-If you log in, your account will be cached so you if you try to enter a second time
+If you log in, your account will be cached so  if you try to enter a second time
 you won't have to enter your password again.
 */
 
@@ -51,6 +51,7 @@ func main() {
 			userWithoutPassword := user.NewUser(username, "")
 
 			buffer := new(bytes.Buffer)
+
 			json.NewEncoder(buffer).Encode(userWithoutPassword)
 
 			resp, err := client.Post(URL+"/cache", "application/json; charset=utf-8", buffer)
@@ -76,13 +77,14 @@ func main() {
 				buf := new(bytes.Buffer)
 				json.NewEncoder(buf).Encode(user)
 
-				resp2, err := client.Post(URL+"/login", "application/json; charset=utf-8", buf)
+				resp, err = client.Post(URL+"/login", "application/json; charset=utf-8", buf)
+
 				if err != nil {
 					fmt.Println(err)
 				}
-				defer resp2.Body.Close()
+				defer resp.Body.Close()
 
-				if resp2.StatusCode == 200 {
+				if resp.StatusCode == 200 {
 					fmt.Println("Welcome " + username)
 				} else {
 					fmt.Println("Wrong user please try again!")

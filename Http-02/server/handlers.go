@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/fcsuarez96/http/user"
@@ -11,10 +12,19 @@ import (
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	var user user.User
 
-	err := json.NewDecoder(r.Body).Decode(&user)
+	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		http.Error(w, err.Error(), 500)
+
+		return
+	}
+
+	err = json.Unmarshal(body, &user)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+
 		return
 	}
 
@@ -27,8 +37,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	userExist := db.CheckUser(user)
 
 	if userExist {
+
 		w.WriteHeader(200)
 	} else {
+
 		w.WriteHeader(400)
 	}
 
